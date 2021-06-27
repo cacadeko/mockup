@@ -2,8 +2,8 @@
 npm install
 
 # Rename file ".env.example" to ".env"
-Windows - ren .env .env.example 
-Linux   - mv .env .env.example 
+Windows - ren .env.example .env
+Linux   - mv .env.example .env
 
 # Change the values of ".env" to values of your Postgres Database
 
