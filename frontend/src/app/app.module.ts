@@ -32,9 +32,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     ReactiveFormsModule,
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule,
     SearchRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

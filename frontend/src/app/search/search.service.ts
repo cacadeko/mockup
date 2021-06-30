@@ -12,9 +12,9 @@ export class SearchService {
 
   constructor(private http: HttpClient) { }
 
-  // search(name: string, doc: number): Observable<any>{
-  //   const search = { name:name, doc:doc};
-  //   return this.http.get<any>(this.url+"?search="+ encodeURIComponent(JSON.stringify(search)));
-  // }
+  search(name: string, doc: number): Observable<any>{
+    const search = { name:name, doc:doc};
+    return this.http.get<any>(this.url+"?search="+ encodeURIComponent(JSON.stringify(search)));
+  }
 
 }
