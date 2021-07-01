@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { SearchService } from './search.service';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { Observable, of, Subscription } from 'rxjs';
+import { tap, startWith, debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 
 export interface User {
-  name: string;
+  farmer: string;
 }
 
 
@@ -14,36 +14,53 @@ export interface User {
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent {
   myControl = new FormControl();
-  options: User[] = [
-    {name: 'Mary'},
-    {name: 'Shelley'},
-    {name: 'Igor'}
-  ];
-  filteredOptions: Observable<User[]>;
+  options = [];
+  filteredOptions: Observable<any>;
   
-  constructor(private src: SearchService) { }
+  constructor(private src: SearchService) { 
+    this.filteredOptions = this.myControl.valueChanges.pipe(
+        startWith(''),
+        debounceTime(400),
+        distinctUntilChanged(),
+        switchMap(val => {
+          return this.filter(val || '')
+        })
+      )
+  }
 
-  ngOnInit(): void {
-
-    this.filteredOptions = this.myControl.valueChanges
-    .pipe(
-      startWith(''),
-      map(value => typeof value === 'string' ? value : value.name),
-      map(name => name ? this._filter(name) : this.options.slice())
-    );
+  ngOnInit() {
 
   }
 
-  displayFn(user: User): string {
-    return user && user.name ? user.name : '';
+    // Filter and return the values
+    filter(val: string): Observable<any[]> {
+      // Call the service whitch makes the http-request
+      return this.src.getData()
+        .pipe(
+          map(response => response.filter(option => {
+            return option.name.toLowerCase().indexOf(val.toLocaleLowerCase()) === 0
+          }))
+        )
+    }
+
+
+  //   this.filteredOptions = this.myControl.valueChanges
+  //   .pipe(
+  //     startWith(''),
+  //     map(value => typeof value === 'string' ? value : value.farmer),
+  //     map(farmer => farmer ? this._filter(farmer) : this.options.slice())
+  //   );
+
+  // }
+
+  // displayFn(user: User): string {
+  //   return user && user.farmer ? user.farmer : '';
+  // }
+
+  // private _filter(farmer: string): User[] {
+  //   const filterValue = farmer.toLowerCase();
+
+  //   return this.options.filter(option => option.farmer.toLowerCase().includes(filterValue));
   }
-
-  private _filter(name: string): User[] {
-    const filterValue = name.toLowerCase();
-
-    return this.options.filter(option => option.name.toLowerCase().includes(filterValue));
-  }
-
-}
